@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:title="New Task"
+        android:id="@+id/newTaskAction"
+        android:icon="@drawable/ic_add_task"
+        app:showAsAction="ifRoom"
+        />
+
+    <item android:title="Wipe"
+        android:id="@+id/wipeDataAction"
+        android:icon="@drawable/ic_wipe_data"
+        app:showAsAction="ifRoom"
+        />
+</menu>
