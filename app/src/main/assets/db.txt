@@ -1,3 +1,0 @@
-Task Legal,23/01/2032,Minha task legal de exemplo
-Task Divertida,20/05/2020, Minha task divertida de exemplo
-Task Maneira,25/12/2019,Minha task maneira de exemplo

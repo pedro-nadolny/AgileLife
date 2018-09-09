@@ -13,7 +13,7 @@
         >
 
         <TextView
-            android:text="Task Name"
+            android:text="@string/task_name_field_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"/>
@@ -25,7 +25,7 @@
             android:inputType="text" />
 
         <TextView
-            android:text="Task Description"
+            android:text="@string/task_description_field_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp" />
@@ -37,7 +37,7 @@
             android:inputType="text"/>
 
         <TextView
-            android:text="Task Date"
+            android:text="@string/task_date_field_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"/>
@@ -52,7 +52,7 @@
             android:id="@+id/createTaskButton"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="Criar Task"
+            android:text="@string/create_task_button_title"
             android:textSize="20sp"
             />
 

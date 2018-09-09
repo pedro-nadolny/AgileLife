@@ -20,14 +20,18 @@
             android:name=".activity.DetailsActivity"
             android:label="@string/title_activity_details"
             android:theme="@style/AppTheme" />
+
         <activity
             android:name=".activity.CreateTaskActivity"
             android:label="@string/title_activity_create_task"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize"/>
+
         <activity
             android:name=".activity.EditTaskActivity"
             android:label="@string/title_activity_edit_task"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize"/>
+
     </application>
 </manifest>

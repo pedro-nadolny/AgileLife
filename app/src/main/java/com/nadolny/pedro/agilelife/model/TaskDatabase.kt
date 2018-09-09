@@ -92,6 +92,38 @@ class TaskDatabase: SQLiteOpenHelper {
         return tasks
     }
 
+    fun getTasksSearchBy(title: String): ArrayList<Task> {
+        val database = readableDatabase
+
+        val query =
+                "SELECT * FROM " + DB_TABLE +
+                " WHERE " + COL_TITLE +
+                " LIKE %" + title + "%"
+                " ORDER BY " + COL_DATE
+
+        val cursor = database.rawQuery(query, arrayOf())
+        val tasks = arrayListOf<Task>()
+
+        if (!cursor.moveToFirst()) {
+            database.close()
+            return tasks
+        }
+
+        do {
+            val title = cursor.getString(cursor.getColumnIndex(COL_TITLE))
+            val desc = cursor.getString(cursor.getColumnIndex(COL_DESC))
+            val date = cursor.getString(cursor.getColumnIndex(COL_DATE))
+
+            val task = Task(title, DateUtils.dateFrom(date), desc)
+            task.id = cursor.getLong(cursor.getColumnIndex(COL_ID))
+
+            tasks.add(task)
+        } while (cursor.moveToNext())
+
+        database.close()
+        return tasks
+    }
+
     fun clearTasks() {
         writableDatabase.execSQL("DELETE FROM " + DB_TABLE)
     }

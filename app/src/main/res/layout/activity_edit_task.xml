@@ -52,7 +52,7 @@
             android:id="@+id/saveTaskButton"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="Salvar Task"
+            android:text="@string/save_task_button_title"
             android:textSize="20sp"
             />
 
