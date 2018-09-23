@@ -1,4 +1,4 @@
-# AgileLife
+# AgileLife (Beta)
 App developed for my Specialization course in App Development. 
 
 Developed in Kotlin. 
