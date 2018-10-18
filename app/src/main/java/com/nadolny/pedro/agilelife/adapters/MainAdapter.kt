@@ -21,13 +21,8 @@ class MainAdapter(private val clickListener: (Int) -> Unit, private val context:
     override fun onBindViewHolder(viewHolder: ViewHolder, index: Int) {
         val task = TaskStore.getTasks()[index]
         viewHolder.rowMain.mainRowTitle.text = task.title
-        viewHolder.rowMain.mainRowSubtitle.text = DateUtils.stringFrom(task.dueDate)
+        viewHolder.rowMain.mainRowSubtitle.text = DateUtils.extenseStringFrom(task.dueDate)
         viewHolder.rowMain.setOnClickListener {clickListener(index)}
-
-        viewHolder.rowMain.mainRowDeleteButton.setOnClickListener {
-            TaskStore.removeTask(task.id ?: -1)
-            this.notifyDataSetChanged()
-        }
     }
 
     override fun getItemCount() = TaskStore.getTasks().count()

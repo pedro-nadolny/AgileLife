@@ -17,6 +17,7 @@ import com.nadolny.pedro.agilelife.adapters.MainAdapter
 import com.nadolny.pedro.agilelife.model.TaskStore
 import com.nadolny.pedro.agilelife.utils.DateUtils
 import kotlinx.android.synthetic.main.activity_main.*
+import model.Task
 import java.util.*
 
 
@@ -33,7 +34,8 @@ class MainActivity : AppCompatActivity() {
 
         val listener = { pos: Int ->
             val intent = Intent(this, DetailsActivity::class.java)
-            intent.putExtra("taskIndex", pos)
+            val id = TaskStore.getTasks()[pos].id
+            intent.putExtra("taskId", id)
             startActivity(intent)
         }
 
@@ -81,31 +83,11 @@ class MainActivity : AppCompatActivity() {
         val id = item?.itemId
 
         when (id) {
-            R.id.wipeDataAction -> wipeButtonAction()
             R.id.selectDateAction -> selectDateFilterAction()
             else -> return super.onOptionsItemSelected(item)
         }
 
         return true
-    }
-
-    private fun wipeButtonAction() {
-
-        val builder = AlertDialog.Builder(this@MainActivity)
-
-        builder.setTitle("Wipe all tasks?")
-        builder.setMessage("Doing this will make all your tasks be deleted and lost forever. Can not be undone. Are you sure?")
-
-        builder.setNeutralButton("CANCEL") { _, _ ->
-
-        }
-
-        builder.setPositiveButton("YES") { _, _ ->
-            TaskStore.clearTasks()
-            mainList.adapter?.notifyDataSetChanged()
-        }
-
-        builder.create().show()
     }
 
     private fun createTaskButtonAction() {

@@ -11,7 +11,6 @@ import kotlinx.android.synthetic.main.activity_edit_task.*
 
 class EditTaskActivity : AppCompatActivity() {
 
-    var taskIndex = -1
     var _id: Long = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,9 +19,8 @@ class EditTaskActivity : AppCompatActivity() {
 
         saveTaskButton.setOnClickListener { saveTask() }
 
-        taskIndex = intent.getIntExtra("taskIndex", 0)
-        val task = TaskStore.getTasks().get(taskIndex)
-        _id = task.id ?: -1
+        _id = intent.getLongExtra("taskId", -1)
+        val task = TaskStore.getTasks().first { it.id == _id }
 
         editActivityTaskName.text = task.title.toEditable()
         editActivityTaskDescription.text = task.descript.toEditable()
@@ -39,16 +37,17 @@ class EditTaskActivity : AppCompatActivity() {
         val taskDate = DateUtils.dateFrom(editActivityTaskDate)
 
         if (taskName.isEmpty()) {
-            Toast.makeText(this, "Insira um nome!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Pick a name!", Toast.LENGTH_LONG).show()
             return
         }
 
-        if (taskDesc.isEmpty()) {
-            Toast.makeText(this, "Insira uma descrição!", Toast.LENGTH_LONG).show()
+        val success = TaskStore.editTask(_id, taskName, taskDate, taskDesc)
+
+        if (!success) {
+            Toast.makeText(this, "Ops, it isn't possible to update your task :(", Toast.LENGTH_LONG).show()
             return
         }
 
-        TaskStore.editTask(_id, taskName, taskDate, taskDesc)
         finish()
     }
 }

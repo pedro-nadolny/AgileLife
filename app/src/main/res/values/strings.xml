@@ -5,8 +5,9 @@
     <string name="title_activity_edit_task">Edit Task</string>
     <string name="save_task_button_title">Save Task</string>
     <string name="create_task_button_title">Create Task</string>
-    <string name="task_name_field_title">Task Name</string>
-    <string name="task_description_field_title">Task Description</string>
-    <string name="task_date_field_title">Task Date</string>
+    <string name="task_name_field_title">Name</string>
+    <string name="task_description_field_title">Description</string>
+    <string name="task_date_field_title">Due Date</string>
     <string name="just_a_placeholder_text">Just a placeholder text</string>
+    <string name="deleted_task_toast_message">Task deleted!</string>
 </resources>

@@ -16,6 +16,7 @@ object TaskStore {
 
     fun loadDatabase(context: Context) {
         database = TaskDatabase(context)
+        tasks = getTasks()
     }
 
     fun getTasks(): ArrayList<Task> {
@@ -33,6 +34,8 @@ object TaskStore {
             tasks = ArrayList(tasks.filter { task -> DateUtils.stringFrom(task.dueDate) == dateFilter})
         }
 
+        tasks.sortBy { it.dueDate }
+
         return tasks
     }
 
@@ -44,30 +47,32 @@ object TaskStore {
         val task = Task(title, dueDate, descript)
         task.id = database!!.addTask(task)
         tasks.add(task)
+        tasks.sortBy { it.dueDate }
     }
 
-    fun removeTask(id: Long) {
-        if (database == null) {
-            return
-        }
+    fun removeTask(id: Long): Boolean {
+        if (database == null || database!!.removeTask(id) <= 0)
+            return false
 
-        if (database!!.removeTask(id) > 0) {
-            tasks = ArrayList(tasks.filter { task -> task.id == id })
-        }
+        val list = tasks.filter { it.id != id }
+        tasks = ArrayList(list)
+        return true
     }
 
-    fun editTask(id: Long, title: String, dueDate: Date, descript: String) {
-        if (database == null) {
-            return
-        }
+    fun editTask(id: Long, title: String, dueDate: Date, descript: String): Boolean {
+        if (database == null) return false
+
+        val index = tasks.indexOfFirst { it.id == id }
+        if (index == -1) return false
 
         val newTask = Task(title, dueDate, descript)
         newTask.id = id
 
-        if (database!!.updateTask(newTask) > 0) {
-            val oldTaskIndex = tasks.indexOfFirst { oldTask -> oldTask.id == id }
-            tasks[oldTaskIndex] = newTask
-        }
+        if (database!!.updateTask(newTask) <= 0) return false
+
+        tasks[index] = newTask
+        tasks.sortBy { it.dueDate }
+        return true
     }
 
     fun clearTasks() {

@@ -13,8 +13,4 @@
         android:icon="@drawable/ic_date"
         app:showAsAction="ifRoom" />
 
-    <item android:title="Wipe"
-        android:id="@+id/wipeDataAction"
-        android:icon="@drawable/ic_wipe_data"
-        app:showAsAction="ifRoom" />
 </menu>

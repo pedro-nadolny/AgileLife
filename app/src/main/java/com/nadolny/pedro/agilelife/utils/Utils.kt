@@ -17,6 +17,10 @@ object DateUtils {
         return SimpleDateFormat("dd/MM/yyy").format(date)
     }
 
+    fun extenseStringFrom(date: Date) : String {
+        return SimpleDateFormat("EEEE, d ").format(date) + "of " + SimpleDateFormat("MMMM, yyyy").format(date)
+    }
+
     fun dateFrom(str: String) : Date {
         return SimpleDateFormat("dd/MM/yyy").parse(str)
     }
