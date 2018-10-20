@@ -33,7 +33,7 @@ class CreateTaskActivity : AppCompatActivity() {
             return
         }
 
-        TaskStore.newTask(taskName, taskDate, taskDesc)
+        TaskStore.newTask(taskName, taskDate, taskDesc, 0)
         finish()
     }
 }

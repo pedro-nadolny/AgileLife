@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="4dp"
+        android:minHeight="110dp">
+
+        <TextView
+            android:id="@+id/listTitle"
+            android:text="Title"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_margin="8dp"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/taskList"
+            android:layout_width="210dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+</LinearLayout>

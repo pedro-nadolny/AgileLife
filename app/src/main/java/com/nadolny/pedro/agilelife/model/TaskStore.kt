@@ -39,12 +39,17 @@ object TaskStore {
         return tasks
     }
 
-    fun newTask(title: String, dueDate: Date, descript: String) {
+    fun getTasksWithStatus(status: Int): ArrayList<Task> {
+        var list = TaskStore.getTasks().filter { it.status == status }
+        return ArrayList(list)
+    }
+
+    fun newTask(title: String, dueDate: Date, descript: String, status: Int) {
         if (database == null) {
             return
         }
 
-        val task = Task(title, dueDate, descript)
+        val task = Task(title, dueDate, descript, status)
         task.id = database!!.addTask(task)
         tasks.add(task)
         tasks.sortBy { it.dueDate }
@@ -59,13 +64,13 @@ object TaskStore {
         return true
     }
 
-    fun editTask(id: Long, title: String, dueDate: Date, descript: String): Boolean {
+    fun editTask(id: Long, title: String, dueDate: Date, descript: String, status: Int): Boolean {
         if (database == null) return false
 
         val index = tasks.indexOfFirst { it.id == id }
         if (index == -1) return false
 
-        val newTask = Task(title, dueDate, descript)
+        val newTask = Task(title, dueDate, descript, status)
         newTask.id = id
 
         if (database!!.updateTask(newTask) <= 0) return false

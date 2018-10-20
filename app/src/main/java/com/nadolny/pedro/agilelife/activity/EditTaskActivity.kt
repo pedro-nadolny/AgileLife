@@ -8,10 +8,12 @@ import com.nadolny.pedro.agilelife.model.TaskStore
 import com.nadolny.pedro.agilelife.utils.DateUtils
 import com.nadolny.pedro.agilelife.utils.toEditable
 import kotlinx.android.synthetic.main.activity_edit_task.*
+import model.Task
+import java.util.*
 
 class EditTaskActivity : AppCompatActivity() {
 
-    var _id: Long = -1
+    var task: Task? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,15 +21,17 @@ class EditTaskActivity : AppCompatActivity() {
 
         saveTaskButton.setOnClickListener { saveTask() }
 
-        _id = intent.getLongExtra("taskId", -1)
-        val task = TaskStore.getTasks().first { it.id == _id }
+        val _id = intent.getLongExtra("taskId", -1)
+        task = TaskStore.getTasks().first { it.id == _id }
 
-        editActivityTaskName.text = task.title.toEditable()
-        editActivityTaskDescription.text = task.descript.toEditable()
+        editActivityTaskName.text = task?.title?.toEditable()
+        editActivityTaskDescription.text = task?.descript?.toEditable()
 
-        val taskDay = DateUtils.getDayFrom(task.dueDate)
-        val taskMonth = DateUtils.getMonthFrom(task.dueDate) - 1
-        val taskYear = DateUtils.getYearFrom(task.dueDate)
+        val date = task?.dueDate ?: Date()
+
+        val taskDay = DateUtils.getDayFrom(date)
+        val taskMonth = DateUtils.getMonthFrom(date) - 1
+        val taskYear = DateUtils.getYearFrom(date)
         editActivityTaskDate.updateDate(taskYear, taskMonth, taskDay)
     }
 
@@ -41,7 +45,7 @@ class EditTaskActivity : AppCompatActivity() {
             return
         }
 
-        val success = TaskStore.editTask(_id, taskName, taskDate, taskDesc)
+        val success = TaskStore.editTask(task?.id ?: -1, taskName, taskDate, taskDesc, task?.status ?: 0)
 
         if (!success) {
             Toast.makeText(this, "Ops, it isn't possible to update your task :(", Toast.LENGTH_LONG).show()

@@ -1,48 +1,138 @@
 package com.nadolny.pedro.agilelife.activity
 
+import android.app.ActionBar
 import android.app.DatePickerDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import android.support.design.widget.CoordinatorLayout
+import android.support.design.widget.FloatingActionButton
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.view.*
-import android.widget.DatePicker
 import com.nadolny.pedro.agilelife.R
-import com.nadolny.pedro.agilelife.adapters.MainAdapter
+import com.nadolny.pedro.agilelife.adapters.ListRowAdapter
+import com.nadolny.pedro.agilelife.adapters.TaskRowAdapter
 import com.nadolny.pedro.agilelife.model.TaskStore
-import com.nadolny.pedro.agilelife.utils.DateUtils
 import kotlinx.android.synthetic.main.activity_main.*
-import model.Task
 import java.util.*
+import kotlin.concurrent.fixedRateTimer
 
 
 class MainActivity : AppCompatActivity() {
 
     private var menu: Menu? = null
+    var lists = arrayListOf("To-do", "Doing", "Paused", "Done")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mainList.setHasFixedSize(true)
-        mainList.layoutManager = LinearLayoutManager(this)
+        TaskStore.loadDatabase(applicationContext)
 
-        val listener = { pos: Int ->
-            val intent = Intent(this, DetailsActivity::class.java)
-            val id = TaskStore.getTasks()[pos].id
-            intent.putExtra("taskId", id)
+        leftActionButton.hide()
+
+        mainList.layoutManager = LinearLayoutManager(
+                applicationContext,
+                LinearLayoutManager.HORIZONTAL,
+                false
+        )
+
+        val listener = { taskId: Long ->
+            val intent = Intent(applicationContext, DetailsActivity::class.java)
+            intent.putExtra("taskId", taskId)
             startActivity(intent)
         }
 
-        mainList.adapter = MainAdapter(listener, applicationContext)
-        TaskStore.loadDatabase(applicationContext)
+        mainList.adapter = ListRowAdapter(lists, listener, applicationContext)
+        rightActionButton.setOnClickListener { createTaskButtonAction() }
 
-        newTaskActionButton.setOnClickListener { createTaskButtonAction() }
+        var dragScrollOffset = 0
+        fixedRateTimer("dragScroll", false, 1000, 2) {
+            if (dragScrollOffset != 0) {
+                runOnUiThread {
+                    mainList.scrollBy(dragScrollOffset, 0)
+                }
+            }
+        }
+
+        mainList.setOnDragListener { view, event ->
+            val x = event.x
+            val y = event.y
+
+            println(String.format("%f / %f", x, y))
+
+            when (event.action) {
+
+                DragEvent.ACTION_DRAG_STARTED -> {
+                    rightActionButton.setImageResource(R.drawable.ic_edit)
+                    leftActionButton.show()
+                }
+
+                DragEvent.ACTION_DRAG_ENDED -> {
+                    rightActionButton.setImageResource(R.drawable.ic_add_task)
+                    leftActionButton.hide()
+                    dragScrollOffset = 0
+                }
+
+                DragEvent.ACTION_DRAG_LOCATION -> {
+
+                    val layoutManager = mainList.layoutManager as LinearLayoutManager
+                    var position = layoutManager.findFirstCompletelyVisibleItemPosition()
+                    val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
+                    val viewUnder = mainList.findChildViewUnder(x, y) ?: return@setOnDragListener true
+
+                    val currentItemPosition = mainList.getChildAdapterPosition(viewUnder)
+
+                    dragScrollOffset = when {
+                        x >= mainList.width - 50 -> 1
+                        x <= 50 -> -1
+                        else -> 0
+                    }
+                }
+
+                DragEvent.ACTION_DROP -> {
+                    val taskAdapter = event.localState as TaskRowAdapter
+                    val task = taskAdapter.selectedTask
+                    val index = taskAdapter.selectedIndex
+                    val taskId = task?.id ?: -1
+
+                    if (task == null || index == null) {
+                        return@setOnDragListener true
+                    }
+
+                    val actionButtonDropDetectionSize = 150
+
+                    if (x > mainList.width - actionButtonDropDetectionSize && y > mainList.height - actionButtonDropDetectionSize) {
+                        val intent = Intent(applicationContext, EditTaskActivity::class.java)
+                        intent.putExtra("taskId", taskId)
+                        startActivity(intent)
+                        return@setOnDragListener true
+                    } else if (x < actionButtonDropDetectionSize && y > mainList.height - actionButtonDropDetectionSize) {
+                        TaskStore.removeTask(taskId)
+                        mainList.adapter?.notifyDataSetChanged()
+                        return@setOnDragListener true
+                    }
+
+                    val viewUnder = mainList.findChildViewUnder(x, y)
+
+                    if (viewUnder == null) {
+                        taskAdapter.tasks.add(index, task)
+                        taskAdapter.notifyItemInserted(index)
+
+                        return@setOnDragListener true
+                    }
+
+                    val newStatus = mainList.getChildAdapterPosition(viewUnder)
+                    TaskStore.editTask(taskId, task.title, task.dueDate, task.descript, newStatus)
+                    mainList.adapter?.notifyDataSetChanged()
+                }
+            }
+
+            return@setOnDragListener true
+        }
     }
 
     override fun onStart() {
@@ -57,7 +147,6 @@ class MainActivity : AppCompatActivity() {
             return super.onCreateOptionsMenu(menu)
         }
 
-
         this.menu = menu
         configureSearchView(menu)
         return super.onCreateOptionsMenu(menu)
@@ -65,6 +154,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun configureSearchView(menu: Menu) {
         val searchView = menu.findItem(R.id.searchTasksAction).actionView as SearchView
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
             override fun onQueryTextSubmit(query: String): Boolean {
@@ -77,6 +167,7 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
         })
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
